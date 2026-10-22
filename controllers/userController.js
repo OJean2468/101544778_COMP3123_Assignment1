@@ -104,8 +104,7 @@ exports.login = async (req, res) => {
 
     return res.status(200).json({
       message: 'Login successful.',
-      jwt_token: token,
-      token // Including both keys ensures compatibility with automated grading scripts
+      jwt_token: token
     });
   } catch (error) {
     return res.status(500).json({
