@@ -1,0 +1,40 @@
+services:
+  # 1. MongoDB Service
+  mongodb:
+    image: mongo:7.0
+    container_name: comp3123_mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
+  # 2. Node.js Backend API Service
+  backend:
+    build: .
+    container_name: comp3123_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/comp3123_assignment1
+      # Read from your local .env file so the secret is not committed
+      - JWT_SECRET=${JWT_SECRET:?Set JWT_SECRET in your .env file}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN:-1d}
+    volumes:
+      # Persist your local application logs on your host machine
+      - ./logs:/usr/src/app/logs
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+volumes:
+  mongo_data:
+
+networks:
+  app-network:
+    driver: bridge
